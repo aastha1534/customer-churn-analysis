@@ -1,0 +1,24 @@
+MODEL PERFORMANCE SUMMARY
+==========================
+
+Logistic Regression
+  Accuracy: 0.683
+  ROC-AUC : 0.773
+
+Random Forest
+  Accuracy: 0.727
+  ROC-AUC : 0.761
+
+Top features driving churn (Random Forest importance):
+  Contract: 0.217
+  MonthlyCharges: 0.172
+  tenure: 0.141
+  TotalCharges: 0.135
+  InternetService: 0.081
+  TechSupport: 0.042
+  PaymentMethod: 0.034
+  OnlineSecurity: 0.022
+  MultipleLines: 0.017
+  PaperlessBilling: 0.016
+  DeviceProtection: 0.015
+  Partner: 0.015
