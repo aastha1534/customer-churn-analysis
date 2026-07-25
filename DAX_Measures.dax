@@ -1,0 +1,60 @@
+// =========================================================================
+// Power BI — DAX measures
+// How to use: Model view -> New Measure -> paste each block (name + formula)
+// Table assumed: customer_churn  (loaded via PowerQuery_M_Script.pq)
+// =========================================================================
+
+Total Customers =
+COUNTROWS(customer_churn)
+
+Churned Customers =
+CALCULATE(COUNTROWS(customer_churn), customer_churn[Churn] = "Yes")
+
+Retained Customers =
+CALCULATE(COUNTROWS(customer_churn), customer_churn[Churn] = "No")
+
+Churn Rate =
+DIVIDE([Churned Customers], [Total Customers], 0)
+
+Retention Rate =
+1 - [Churn Rate]
+
+Avg Monthly Charges =
+AVERAGE(customer_churn[MonthlyCharges])
+
+Avg Tenure (Months) =
+AVERAGE(customer_churn[tenure])
+
+Avg Tenure Churned =
+CALCULATE(AVERAGE(customer_churn[tenure]), customer_churn[Churn] = "Yes")
+
+Monthly Revenue at Risk =
+CALCULATE(SUM(customer_churn[MonthlyCharges]), customer_churn[Churn] = "Yes")
+
+Annualized Revenue at Risk =
+[Monthly Revenue at Risk] * 12
+
+Total Monthly Revenue =
+SUM(customer_churn[MonthlyCharges])
+
+Pct Revenue at Risk =
+DIVIDE([Monthly Revenue at Risk], [Total Monthly Revenue], 0)
+
+Churn Rate - Month to Month =
+CALCULATE([Churn Rate], customer_churn[Contract] = "Month-to-month")
+
+High Risk Customers (Score) =
+// Simple rule-based risk flag for a Power BI table/card:
+// Month-to-month + Fiber optic + tenure < 12 + no Tech Support
+CALCULATE(
+    COUNTROWS(customer_churn),
+    customer_churn[Contract] = "Month-to-month",
+    customer_churn[InternetService] = "Fiber optic",
+    customer_churn[tenure] < 12,
+    customer_churn[TechSupport] = "No"
+)
+
+YoY Churned Trend Placeholder =
+// If a signup/churn date field is added later, wrap this measure
+// with a date table + TOTALYTD / DATEADD for real trend analysis.
+[Churned Customers]
