@@ -1,0 +1,46 @@
+// =========================================================================
+// Tableau — Calculated Fields
+// How to use: Analysis -> Create Calculated Field -> paste name + formula
+// Data source: data/telco_customer_churn.csv (connect via Text File)
+// =========================================================================
+
+// --- Churn Flag (numeric, for aggregations) ---
+Churn Flag
+IF [Churn] = "Yes" THEN 1 ELSE 0 END
+
+// --- Churn Rate (use as a table calc / aggregate measure) ---
+Churn Rate
+SUM([Churn Flag]) / COUNT([Churn])
+
+// --- Tenure Cohort ---
+Tenure Cohort
+IF [Tenure] <= 12 THEN "0-12 months"
+ELSEIF [Tenure] <= 24 THEN "13-24 months"
+ELSEIF [Tenure] <= 48 THEN "25-48 months"
+ELSE "49-72 months"
+END
+
+// --- Number of Add-on Services ---
+Num Add Ons
+(IF [Online Security] = "Yes" THEN 1 ELSE 0 END) +
+(IF [Online Backup] = "Yes" THEN 1 ELSE 0 END) +
+(IF [Device Protection] = "Yes" THEN 1 ELSE 0 END) +
+(IF [Tech Support] = "Yes" THEN 1 ELSE 0 END) +
+(IF [Streaming TV] = "Yes" THEN 1 ELSE 0 END) +
+(IF [Streaming Movies] = "Yes" THEN 1 ELSE 0 END)
+
+// --- Revenue at Risk ---
+Revenue At Risk
+IF [Churn] = "Yes" THEN [Monthly Charges] ELSE 0 END
+
+// --- High Risk Flag (rule-based) ---
+High Risk Flag
+IF [Contract] = "Month-to-month"
+   AND [Internet Service] = "Fiber optic"
+   AND [Tenure] < 12
+   AND [Tech Support] = "No"
+THEN "High Risk" ELSE "Standard" END
+
+// --- Customer Lifetime Value (simple) ---
+Est CLV
+[Monthly Charges] * [Tenure]

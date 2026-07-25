@@ -1,37 +1,39 @@
-# Power BI Setup Guide
+# Tableau Setup Guide
 
-Power BI report files (`.pbix`) are a proprietary binary format that can only
-be saved by Power BI Desktop itself, so this folder ships the report as
-**source components** you import in a few minutes rather than a pre-built
-binary — this also means you can inspect every transform and measure before
-running it, instead of trusting an opaque file.
+Tableau workbook files (`.twbx`) are a proprietary packaged format that only
+Tableau Desktop/Public can write, so this folder ships the workbook as
+**source components** — the exact calculated fields and a build guide — that
+you assemble in Tableau in a few minutes.
 
 ## Steps
 
-1. Open **Power BI Desktop** → *Get Data* → *Text/CSV* → select
-   `data/telco_customer_churn.csv`. Click **Transform Data** (not Load).
-2. In Power Query Editor: *Home → Advanced Editor*, replace the contents with
-   [`PowerQuery_M_Script.pq`](./PowerQuery_M_Script.pq) (update the file path
-   on the first line to match your machine), click **Done → Close & Apply**.
-3. Go to **Model view** → *New Measure* and paste in each measure from
-   [`DAX_Measures.dax`](./DAX_Measures.dax) one at a time.
-4. Build the report page using these suggested visuals:
+1. Open **Tableau Desktop** (or Tableau Public) → *Connect → Text File* →
+   select `data/telco_customer_churn.csv`.
+2. Confirm field types: `SeniorCitizen` → keep as number or convert to
+   boolean; `MonthlyCharges` / `TotalCharges` → Number (decimal); `tenure` →
+   Number (whole).
+3. Create each calculated field from
+   [`Calculated_Fields.txt`](./Calculated_Fields.txt) via
+   *Analysis → Create Calculated Field*.
+4. Build these sheets, then combine into a dashboard:
 
-   | Visual | Fields |
-   |---|---|
-   | KPI Cards | `Total Customers`, `Churn Rate`, `Monthly Revenue at Risk` |
-   | Donut chart | `Churn` (legend), `Total Customers` (values) |
-   | Stacked bar | `Contract` (axis), `Churn Rate` (values), split by `Churn` |
-   | Stacked bar | `InternetService` (axis), `Churn Rate` (values) |
-   | Line/column | `TenureCohort` (axis), `Churn Rate` (values) |
-   | Table | `PaymentMethod`, `Churn Rate`, `Total Customers` |
-   | Slicers | `Contract`, `InternetService`, `SeniorCitizen`, `TenureCohort` |
+   | Sheet | Chart type | Fields |
+   |---|---|---|
+   | Churn Overview | Pie/Donut | `Churn` (color), `CNT(Churn)` (angle) |
+   | Churn by Contract | Bar | `Contract` (rows), `Churn Rate` (columns), color = `Churn` |
+   | Churn by Internet Service | Bar | `Internet Service` (rows), `Churn Rate` (columns) |
+   | Tenure Cohort Trend | Line/Bar | `Tenure Cohort` (columns), `Churn Rate` (rows) |
+   | Revenue at Risk | KPI text/Bar | `SUM(Revenue At Risk)` |
+   | High Risk Customers | Table/Scatter | `High Risk Flag`, `Monthly Charges`, `Tenure` |
 
-5. Apply the color theme: churned = `#E74C3C`, retained = `#2ECC71`,
-   accent = `#1F4E78` (View → Themes → Customize current theme).
-6. Save as `Customer_Churn_Dashboard.pbix`.
+5. Assemble into **Dashboard → New Dashboard**, add filters for `Contract`,
+   `Internet Service`, `Senior Citizen`, `Tenure Cohort` and set them to apply
+   to all sheets using this data source.
+6. Color palette: churned = `#E74C3C`, retained = `#2ECC71`, accent =
+   `#1F4E78` (matches the Excel/Power BI/Python theme for a consistent
+   cross-tool look).
+7. Save as `Customer_Churn_Dashboard.twbx` (packaged workbook, includes the
+   data extract so it's shareable standalone).
 
 ## Files in this folder
-- `PowerQuery_M_Script.pq` — data load + transform (cohort bucket, churn flag, add-on count)
-- `DAX_Measures.dax` — all KPI and analytical measures
-- `powerbi_layout_reference.png` — wireframe reference for page layout (see /images)
+- `Calculated_Fields.txt` — every calculated field used across the sheets
